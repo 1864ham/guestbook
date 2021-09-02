@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+        <form action="/guestbook/modify" method="post">
+            <input type="hidden" th:value="${requestDTO.page}" name="page"/>
+            <h1 class="mt-4">Guestbook Modify Page</h1>
+            <div class="form-group">
+                <label>글번호</label>
+                <input type="text" class="form-control" name="gno"
+                       th:value="${dto.gno}" readonly>
+            </div>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" class="form-control" name="title"
+                       th:value="${dto.title}">
+            </div>
+            <div class="form-group">
+                <label>Content</label>
+                <textarea class="form-control" name="content"
+                          rows="5">[[${dto.content}]]</textarea>
+            </div>
+            <div class="form-group">
+                <label>Writer</label>
+                <input type="text" class="form-control" name="writer"
+                       th:value="${dto.writer}" readonly>
+            </div>
+            <div class="form-group">
+                <label>등록 일자</label>
+                <input type="text" class="form-control" name="regDate" readonly
+                       th:value="${#temporals.format(dto.regDate,'yyyy/MM/dd HH:mm:ss')}">
+            </div>
+            <div class="form-group">
+                <label>수정 일자</label>
+                <input type="text" class="form-control" name="modDate" readonly
+                       th:value="${#temporals.format(dto.modDate,'yyyy/MM/dd HH:mm:ss')}">
+            </div>
+            <div style="margin-bottom: 20px;"></div>
+        </form>
+        <button class="btn btn-btn-primary modifyBtn">수정하기</button>
+        <button class="btn btn-btn-info">목록보기</button>
+        <button class="btn btn-btn-danger removeBtn">삭제하기</button>
+        <div style="margin-bottom: 20px;"></div>
+
+        <script th:inline="javascript">
+            var actionForm = $("form");
+            $(".removeBtn").click(function(){
+                actionForm.attr("action", "/guestbook/remove")
+                .attr("method", "post");
+                actionForm.submit();
+            });
+
+            $(".listBtn").click(function(){
+
+            var pageInfo = $("input[name='page']");
+
+            actionForm.empty();
+            actionForm.append(pageInfo);
+            actionForm
+            .attr("action", "/guestbook/list")
+            .attr("method", "get");
+<!--            consloe.log(actionFrom.html());-->
+            actionForm.submit();
+            });
+
+        </script>
+    </th:block>
+</th:block>
+</html>
