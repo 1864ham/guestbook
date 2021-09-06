@@ -34,9 +34,11 @@ public class GuestbookServiceImpl implements GuestbookService {
         return entity.getGno();
     }
 
-    public PageResultDTO<GuestbookDTO,Guestbook> getList(PageRequestDTO dto) {
+    @Override
+    public PageResultDTO<GuestbookDTO, Guestbook> getList(PageRequestDTO dto) {
         Pageable pageable = dto.getPageable(Sort.by("gno").descending());
-        Page<Guestbook> result = guestbookRepository.findAll(pageable);
+        BooleanBuilder booleanBuilder = getSearch(dto);
+        Page<Guestbook> result = guestbookRepository.findAll(booleanBuilder, pageable);
         Function<Guestbook, GuestbookDTO> fn = (entity -> entityToDto(entity));
         return new PageResultDTO<>(result, fn);
     }
@@ -64,16 +66,19 @@ public class GuestbookServiceImpl implements GuestbookService {
     }
 
     private BooleanBuilder getSearch(PageRequestDTO requestDTO) {
-        String type = requestDTO.getType();
         BooleanBuilder booleanBuilder = new BooleanBuilder();
         QGuestbook qGuestbook = QGuestbook.guestbook;
+
+        String type = requestDTO.getType();
         String keyWord = requestDTO.getKeyword();
+
         BooleanExpression expression = qGuestbook.gno.gt(0L);
         booleanBuilder.and(expression);
-        if (type == null || type.trim().length() == 0) {return booleanBuilder;}
+        if (type == null || type.trim().length() == 0) {
+            return booleanBuilder;
+        }
 
             BooleanBuilder conditionBuilder = new BooleanBuilder();
-
             if (type.contains("t")) {
                 conditionBuilder.or(qGuestbook.title.contains(keyWord));
             }
@@ -84,20 +89,7 @@ public class GuestbookServiceImpl implements GuestbookService {
                 conditionBuilder.or(qGuestbook.writer.contains(keyWord));
             }
             booleanBuilder.and(conditionBuilder);
-
             return booleanBuilder;
     }
 
-    @Override
-    public PageResultDTO<GuestbookDTO, Guestbook> getList(PageRequestDTO requestDTO) {
-
-        Pageable pageable = requestDTO.getPageable(Sort.by("gno").descending());
-
-        BooleanBuilder booleanBuilder = getSearch(requestDTO);
-
-        Page<Guestbook> result = guestbookRepository.findAll(booleanBuilder, pageable);
-
-        Function<Guestbook, GuestbookDTO> fn = (entity -> entityToDto(entity));
-        return new PageResultDTO<>(result, fn);
-    }
 }

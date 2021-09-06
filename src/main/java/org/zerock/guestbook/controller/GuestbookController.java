@@ -24,7 +24,7 @@ public class GuestbookController {
 
   private final GuestbookService service;
 
-  @GetMapping({"/", ""})
+  @GetMapping({"/",""})
   public String index() {
     return "redirect:/guestbook/list";
   }
@@ -36,8 +36,7 @@ public class GuestbookController {
   }
 
   @GetMapping("/register")
-  public void resister() {
-  }
+  public void register() { }
 
   @PostMapping("/register")
   public String registerPost(GuestbookDTO dto, RedirectAttributes redirectAttributes) {
@@ -54,38 +53,26 @@ public class GuestbookController {
     GuestbookDTO dto = service.read(gno);
     model.addAttribute("dto", dto);
   }
-
   @PostMapping("/modify")
   public String modify(GuestbookDTO dto, RedirectAttributes redirectAttributes,
-                       @ModelAttribute("requestDTo") PageRequestDTO requestDTO) {
-    service.modify(dto);
-    redirectAttributes.addAttribute("page", requestDTO.getPage());
-    redirectAttributes.addAttribute("gno", dto.getGno());
-    return "redirect:/guestbook/read";
-  }
-
-  @PostMapping("/remove")
-  public String remove(Long gno, RedirectAttributes redirectAttributes) {
-    service.remove(gno);
-    redirectAttributes.addFlashAttribute("msg", gno);
-    redirectAttributes.addFlashAttribute("noti", "삭제");
-    return "redirect:/guestbook/list";
-  }
-
-  @PostMapping("/modify")
-  public String modify(GuestbookDTO dto,
-                       @ModelAttribute("requestDTO") PageRequestDTO requestDTO,
-                       RedirectAttributes redirectAttributes) {
-
-    log.info("post modify.............................");
-    log.info("dto: " + dto);
+                       @ModelAttribute("requestDTO") PageRequestDTO requestDTO) {
     service.modify(dto);
     redirectAttributes.addAttribute("page", requestDTO.getPage());
     redirectAttributes.addAttribute("type", requestDTO.getType());
     redirectAttributes.addAttribute("keyword", requestDTO.getKeyword());
     redirectAttributes.addAttribute("gno", dto.getGno());
-
     return "redirect:/guestbook/read";
   }
 
+  @PostMapping("/remove")
+  public String remove(Long gno, RedirectAttributes redirectAttributes,
+                      PageRequestDTO pageRequestDTO) {
+    service.remove(gno);
+    redirectAttributes.addFlashAttribute("msg", gno);
+    redirectAttributes.addFlashAttribute("noti", "삭제");
+    redirectAttributes.addAttribute("page", pageRequestDTO.getPage());
+    redirectAttributes.addAttribute("type", pageRequestDTO.getType());
+    redirectAttributes.addAttribute("keyword", pageRequestDTO.getKeyword());
+    return "redirect:/guestbook/list";
+  }
 }

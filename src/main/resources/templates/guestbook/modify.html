@@ -3,8 +3,12 @@
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
     <th:block th:fragment="content">
         <form action="/guestbook/modify" method="post">
-            <input type="hidden" th:value="${requestDTO.page}" name="page" />
             <h1 class="mt-4">Guestbook Modify Page</h1>
+
+            <input type="hidden" name="page" th:value="${requestDTO.page}">
+            <input type="hidden" name="type" th:value="${requestDTO.type}">
+            <input type="hidden" name="keyword" th:value="${requestDTO.keyword}">
+
             <div class="form-group">
                 <label>글번호</label>
                 <input type="text" class="form-control" name="gno"
@@ -27,12 +31,12 @@
             </div>
             <div class="form-group">
                 <label>등록 일자</label>
-                <input type="text" class="form-control"  readonly
+                <input type="text" class="form-control" readonly
                        th:value="${#temporals.format(dto.regDate,'yyyy/MM/dd HH:mm:ss')}">
             </div>
             <div class="form-group">
                 <label>수정 일자</label>
-                <input type="text" class="form-control"  readonly
+                <input type="text" class="form-control" readonly
                        th:value="${#temporals.format(dto.modDate,'yyyy/MM/dd HH:mm:ss')}">
             </div>
             <div style="margin-bottom: 20px;"></div>
@@ -41,41 +45,6 @@
         <button class="btn btn-info listBtn">목록보기</button>
         <button class="btn btn-danger removeBtn">삭제하기</button>
         <div style="margin-bottom: 20px;"></div>
-
-
-        <h1 class="mt-4">GuestBook Modify Page</h1>
-
-        <form action="/guestbook/modify" method="post">
-
-            <input type="hidden" name="page" th:value="${requestDTO.page}">
-            <input type="hidden" name="type" th:value="${requestDTO.type}">
-            <input type="hidden" name="keyword" th:value="${requestDTO.keyword}">
-
-            <div class="form-group">
-                <label>Gno</label>
-                <input type="text" class="form-control" name="gno" th:value="${dto.gno}" readonly>
-            </div>
-
-            $(".listBtn").click(function(){
-                //var pageInfo = $("input[name='page']")
-                var page = $("input[name='page']")
-                var type = $("input[name='type']")
-                var keyword = $("input[name='keyword']")
-
-                actionForm.empty();
-
-                actionFrom.append(page);
-                actionFrom.append(type);
-                actionFrom.append(keyword);
-
-                actionForm
-                    .attr("action", "/guestbook/list")
-                    .attr("method", "get);
-
-                actionForm.submit();
-            });
-
-        </form>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script th:inline="javascript">
@@ -93,8 +62,12 @@
 
             $(".listBtn").click(function(){
                 var pageInfo = $("input[name='page']");
+                var type = $("input[name='type']");
+                var keyword = $("input[name='keyword']");
                 actionForm.empty(); //page를 제외한 나머지 내용들 필요없음
                 actionForm.append(pageInfo);
+                actionForm.append(type);
+                actionForm.append(keyword);
                 actionForm.attr("action", "/guestbook/list").attr("method", "get");
                 actionForm.submit();
             });
